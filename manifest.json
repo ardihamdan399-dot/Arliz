@@ -1,7 +1,7 @@
 {
-  "name": "Game Operasi Intelijen Quiz",
-  "short_name": "KUIS KOMANDO",
-  "description": "Uji ketajaman radar logika lu dalam 50 soal interaktif. Sejarah, Matematika, Fisika & Sosiologi Islam!",
+  "name": "Arliz Gameplay",
+  "short_name": "Arliz",
+  "description": "Game Operasi Intelijen Quiz - Uji ketajaman radar logika lu dalam 50 soal interaktif. Sejarah, Matematika, Fisika & Sosiologi Islam!",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -30,7 +30,7 @@
   ],
   "screenshots": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%230f172a' width='540' height='720'/><text x='270' y='360' font-size='60' text-anchor='middle' dominant-baseline='middle' fill='%23fbbf24' font-weight='bold'>KUIS KOMANDO</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%230f172a' width='540' height='720'/><text x='270' y='360' font-size='60' text-anchor='middle' dominant-baseline='middle' fill='%23fbbf24' font-weight='bold'>ARLIZ GAMEPLAY</text></svg>",
       "sizes": "540x720",
       "type": "image/svg+xml",
       "form_factor": "narrow"
