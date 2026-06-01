@@ -3,19 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Game Operasi Intelijen Quiz - Uji logika Anda dalam 50 soal interaktif tentang Sejarah, Matematika, Fisika & Sosiologi Islam">
+    <meta name="description" content="Arliz Gameplay - Uji logika Anda dalam 50 soal interaktif tentang Sejarah, Matematika, Fisika & Sosiologi Islam">
     <meta name="theme-color" content="#0f172a">
     <link rel="manifest" href="./manifest.json">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23fbbf24' width='192' height='192' rx='45'/><text x='96' y='96' font-size='120' text-anchor='middle' dominant-baseline='middle' font-weight='bold'>🗿</text></svg>">
-    <title>Game Operasi Intelijen Quiz 🗿🪖</title>
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23fbbf24' width='192' height='192' rx='45'/><text x='96' y='96' font-size='120' text-anchor='middle' dominant-baseline='middle' font-weight='bold'>A</text></svg>">
+    <title>Arliz Gameplay - Quiz Interaktif</title>
     <!-- Menggunakan Tailwind CSS Premium UI -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Midtrans Payment Gateway -->
+    <script src="https://app.midtrans.com/snap/snap.js" data-client-key="YOUR_MIDTRANS_CLIENT_KEY"></script>
     <style>
         @keyframes pulse-border {
             0%, 100% { border-color: rgba(234, 179, 8, 0.3); }
             50% { border-color: rgba(234, 179, 8, 0.8); }
         }
         .pulse-zone { animation: pulse-border 2s infinite; }
+        @keyframes slide-in {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .slide-in { animation: slide-in 0.3s ease-out; }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 font-sans min-h-screen flex flex-col justify-between">
@@ -24,7 +31,7 @@
     <header class="bg-gray-900 border-b-2 border-yellow-500/30 p-4 shadow-xl">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-black tracking-widest text-yellow-500">KUIS KOMANDO ����</h1>
+                <h1 class="text-xl font-black tracking-widest text-yellow-500">ARLIZ GAMEPLAY</h1>
                 <p class="text-[10px] text-gray-400">STATUS: <span id="status-badge" class="text-green-400">OPERASI AKTIF</span></p>
             </div>
             <!-- STATS COUNTER -->
@@ -35,6 +42,9 @@
                 <div class="bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
                     ❤️ NYAWA: <span id="lives-val" class="text-red-500 font-bold">❤️❤️❤️</span>
                 </div>
+                <button onclick="openShop()" class="bg-purple-600 hover:bg-purple-700 px-3 py-1.5 rounded-lg border border-purple-500 transition font-bold" title="Shop">
+                    💎 SHOP
+                </button>
             </div>
         </div>
     </header>
@@ -45,9 +55,9 @@
             
             <!-- SCREEN 1: START/MULAI -->
             <div id="start-screen" class="text-center py-8">
-                <span class="text-5xl">🗿</span>
-                <h2 class="text-2xl font-black mt-4 text-yellow-500 tracking-wider">OPERASI INTELIJEN QUIZ</h2>
-                <p class="text-sm text-gray-400 mt-2 max-w-sm mx-auto">Uji ketajaman radar logika lu dalam 50 soal Sejarah, Matematika, Fisika, dan Sosiologi Islam. Kehilangan 3 nyawa = MISI GAGAL!</p>
+                <span class="text-5xl">🎮</span>
+                <h2 class="text-2xl font-black mt-4 text-yellow-500 tracking-wider">ARLIZ GAMEPLAY</h2>
+                <p class="text-sm text-gray-400 mt-2 max-w-sm mx-auto">Uji ketajaman logika lu dalam 50 soal Sejarah, Matematika, Fisika, dan Sosiologi Islam. Kehilangan 3 nyawa = MISI GAGAL!</p>
                 <div class="mt-8 space-y-2">
                     <button onclick="startGame()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-950 font-black px-8 py-3 rounded-xl tracking-widest transform active:scale-95 transition shadow-lg shadow-yellow-500/20">
                         MULAI OPERASI 🚀
@@ -110,13 +120,168 @@
         </div>
     </main>
 
+    <!-- SHOP MODAL -->
+    <div id="shop-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-900 rounded-2xl p-6 border-2 border-yellow-500/30 max-w-md w-full slide-in">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-black text-yellow-500">💎 PREMIUM SHOP</h2>
+                <button onclick="closeShop()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+
+            <div class="space-y-3 mb-6">
+                <!-- Extra Lives Pack -->
+                <div class="bg-gray-800 p-4 rounded-xl border border-red-500/30">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <p class="font-bold text-red-400">❤️ Extra Lives Pack</p>
+                            <p class="text-xs text-gray-400">+3 Nyawa tambahan</p>
+                        </div>
+                        <span class="text-2xl">💵</span>
+                    </div>
+                    <button onclick="buyItem('extra_lives', 'Extra Lives Pack', 14900)" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition">
+                        Beli Rp 14.900
+                    </button>
+                </div>
+
+                <!-- Hints Pack -->
+                <div class="bg-gray-800 p-4 rounded-xl border border-blue-500/30">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <p class="font-bold text-blue-400">💡 Hints Pack (5x)</p>
+                            <p class="text-xs text-gray-400">Buka jawaban lebih cepat</p>
+                        </div>
+                        <span class="text-2xl">💵</span>
+                    </div>
+                    <button onclick="buyItem('hints', 'Hints Pack', 14900)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition">
+                        Beli Rp 14.900
+                    </button>
+                </div>
+
+                <!-- Premium Pass -->
+                <div class="bg-gray-800 p-4 rounded-xl border border-purple-500/30 ring-2 ring-purple-500/20">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <p class="font-bold text-purple-400">👑 Premium Pass (Unlimited)</p>
+                            <p class="text-xs text-gray-400">Semua fitur tanpa batas</p>
+                        </div>
+                        <span class="text-2xl">💎</span>
+                    </div>
+                    <button onclick="buyItem('premium', 'Premium Pass', 74900)" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded-lg transition">
+                        Beli Rp 74.900
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-xs text-gray-300">
+                <p class="font-bold mb-1">ℹ️ INFO:</p>
+                <p>Semua level game tetap GRATIS! Premium hanya untuk fitur tambahan.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- FOOTER -->
     <footer class="text-center text-gray-700 text-[10px] pb-4 tracking-widest font-mono">
-        COMMANDER INTERACTIVE ENGINE V1.0 • 2026 • <span id="footer-mode">Online</span>
+        ARLIZ GAMEPLAY V1.0 • 2026 • <span id="footer-mode">Online</span>
     </footer>
 
     <!-- JAVASCRIPT GAME LOGIC SYSTEM -->
     <script>
+        // Midtrans Configuration
+        const MIDTRANS_CLIENT_KEY = 'YOUR_MIDTRANS_CLIENT_KEY';
+        const MIDTRANS_SERVER_URL = 'YOUR_SERVER_URL/api/payment'; // Backend URL Anda
+
+        // Premium Features State
+        let premiumFeatures = {
+            extraLives: 0,
+            hints: 0,
+            isPremium: false
+        };
+
+        // Shop Functions
+        function openShop() {
+            document.getElementById('shop-modal').classList.remove('hidden');
+        }
+
+        function closeShop() {
+            document.getElementById('shop-modal').classList.add('hidden');
+        }
+
+        function buyItem(itemType, itemName, price) {
+            if (!window.snap) {
+                alert('Payment gateway belum tersedia. Hubungi support.');
+                return;
+            }
+
+            // Send request to backend untuk membuat transaction
+            const orderId = 'ARLIZ-' + Date.now();
+            
+            fetch(MIDTRANS_SERVER_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    item_type: itemType,
+                    item_name: itemName,
+                    amount: price,
+                    order_id: orderId,
+                    customer_name: 'Guest Player'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.token) {
+                    snap.pay(data.token, {
+                        onSuccess: function(result) {
+                            handlePaymentSuccess(itemType);
+                        },
+                        onPending: function(result) {
+                            alert('Pembayaran pending, silakan lengkapi transaksi Anda');
+                        },
+                        onError: function(result) {
+                            alert('Pembayaran gagal! Silakan coba lagi.');
+                        },
+                        onClose: function() {
+                            alert('Anda menutup popup pembayaran');
+                        }
+                    });
+                }
+            })
+            .catch(err => {
+                console.error('Payment error:', err);
+                alert('Terjadi kesalahan. Coba lagi nanti.');
+            });
+        }
+
+        function handlePaymentSuccess(itemType) {
+            switch(itemType) {
+                case 'extra_lives':
+                    premiumFeatures.extraLives += 3;
+                    alert('✅ +3 Nyawa ditambahkan! Selamat bermain 🎮');
+                    break;
+                case 'hints':
+                    premiumFeatures.hints += 5;
+                    alert('✅ +5 Hints ditambahkan! Gunakan dengan bijak 💡');
+                    break;
+                case 'premium':
+                    premiumFeatures.isPremium = true;
+                    premiumFeatures.extraLives = 999;
+                    premiumFeatures.hints = 999;
+                    alert('🎉 Premium Pass aktif! Nikmati semua fitur tanpa batas!');
+                    break;
+            }
+            localStorage.setItem('premiumFeatures', JSON.stringify(premiumFeatures));
+            closeShop();
+        }
+
+        // Load Premium Features dari Local Storage
+        function loadPremiumFeatures() {
+            const saved = localStorage.getItem('premiumFeatures');
+            if (saved) {
+                premiumFeatures = JSON.parse(saved);
+            }
+        }
+
         // Register Service Worker untuk PWA Offline Support
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -246,7 +411,6 @@
         function startGame() {
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-            // Acak urutan soal biar seru
             shuffledQuestions = [...quizDatabase].sort(() => Math.random() - 0.5);
             currentQuestionIndex = 0;
             score = 0;
@@ -269,8 +433,16 @@
 
         // BUKA KUNCI JAWABAN
         function revealAnswer() {
-            document.getElementById('btn-reveal').classList.add('hidden');
-            document.getElementById('validation-zone').classList.remove('hidden');
+            if (premiumFeatures.hints > 0 || premiumFeatures.isPremium) {
+                document.getElementById('btn-reveal').classList.add('hidden');
+                document.getElementById('validation-zone').classList.remove('hidden');
+                if (premiumFeatures.hints > 0) {
+                    premiumFeatures.hints--;
+                }
+            } else {
+                document.getElementById('btn-reveal').classList.add('hidden');
+                document.getElementById('validation-zone').classList.remove('hidden');
+            }
         }
 
         // EKSEKUSI TOMBOL BENAR/SALAH DARI USER
@@ -283,13 +455,13 @@
             updateDashboard();
 
             if (lives <= 0) {
-                endGame(false); // Game Over kalah nyawa
+                endGame(false);
             } else {
                 currentQuestionIndex++;
                 if (currentQuestionIndex < shuffledQuestions.length) {
                     showQuestion();
                 } else {
-                    endGame(true); // Game Over karena semua soal habis (Menang!)
+                    endGame(true);
                 }
             }
         }
@@ -334,7 +506,10 @@
         }
 
         // Initialize on load
-        document.addEventListener('DOMContentLoaded', updateModeStatus);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPremiumFeatures();
+            updateModeStatus();
+        });
     </script>
 </body>
 </html>
