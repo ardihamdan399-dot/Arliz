@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Game Operasi Intelijen Quiz - Uji logika Anda dalam 50 soal interaktif tentang Sejarah, Matematika, Fisika & Sosiologi Islam">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23fbbf24' width='192' height='192' rx='45'/><text x='96' y='96' font-size='120' text-anchor='middle' dominant-baseline='middle' font-weight='bold'>🗿</text></svg>">
+    <title>Game Operasi Intelijen Quiz 🗿🪖</title>
+    <!-- Menggunakan Tailwind CSS Premium UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse-border {
+            0%, 100% { border-color: rgba(234, 179, 8, 0.3); }
+            50% { border-color: rgba(234, 179, 8, 0.8); }
+        }
+        .pulse-zone { animation: pulse-border 2s infinite; }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER / DASHBOARD UTAMA GAME -->
+    <header class="bg-gray-900 border-b-2 border-yellow-500/30 p-4 shadow-xl">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-black tracking-widest text-yellow-500">KUIS KOMANDO ����</h1>
+                <p class="text-[10px] text-gray-400">STATUS: <span id="status-badge" class="text-green-400">OPERASI AKTIF</span></p>
+            </div>
+            <!-- STATS COUNTER -->
+            <div class="flex gap-4 text-sm font-mono">
+                <div class="bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
+                    🏆 SKOR: <span id="score-val" class="text-green-400 font-bold">0</span>
+                </div>
+                <div class="bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
+                    ❤️ NYAWA: <span id="lives-val" class="text-red-500 font-bold">❤️❤️❤️</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- AREA UTAMA GAMEPLAY -->
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="w-full max-w-xl bg-gray-900 rounded-2xl p-6 border-2 border-gray-800 shadow-2xl pulse-zone">
+            
+            <!-- SCREEN 1: START/MULAI -->
+            <div id="start-screen" class="text-center py-8">
+                <span class="text-5xl">🗿</span>
+                <h2 class="text-2xl font-black mt-4 text-yellow-500 tracking-wider">OPERASI INTELIJEN QUIZ</h2>
+                <p class="text-sm text-gray-400 mt-2 max-w-sm mx-auto">Uji ketajaman radar logika lu dalam 50 soal Sejarah, Matematika, Fisika, dan Sosiologi Islam. Kehilangan 3 nyawa = MISI GAGAL!</p>
+                <div class="mt-8 space-y-2">
+                    <button onclick="startGame()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-950 font-black px-8 py-3 rounded-xl tracking-widest transform active:scale-95 transition shadow-lg shadow-yellow-500/20">
+                        MULAI OPERASI 🚀
+                    </button>
+                    <button id="install-btn" onclick="installApp()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black px-8 py-2 rounded-xl tracking-widest transform active:scale-95 transition shadow-lg shadow-blue-600/20 hidden">
+                        📱 INSTALL APLIKASI
+                    </button>
+                </div>
+                <p id="offline-notice" class="text-xs text-gray-500 mt-4 font-mono">⚡ Mode: <span id="mode-text">Loading...</span></p>
+            </div>
+
+            <!-- SCREEN 2: GAMEPLAY (PERTANYAAN) -->
+            <div id="game-screen" class="hidden">
+                <!-- PROGRESS & SEKTOR -->
+                <div class="flex justify-between items-center border-b border-gray-800 pb-3 mb-4">
+                    <span id="question-sector" class="text-xs font-bold tracking-widest bg-yellow-500/10 text-yellow-500 px-2.5 py-1 rounded-md uppercase">SEKTOR</span>
+                    <span class="text-xs font-mono text-gray-500">SOAL: <span id="current-idx">1</span>/50</span>
+                </div>
+
+                <!-- TEKS PERTANYAAN -->
+                <div class="min-h-[80px] flex items-center mb-6">
+                    <p id="question-text" class="text-base md:text-lg font-bold text-gray-200 leading-relaxed">Loading pertahanan musuh...</p>
+                </div>
+
+                <!-- INPUT JAWABAN LU -->
+                <div class="mb-4">
+                    <button onclick="revealAnswer()" id="btn-reveal" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl border border-gray-700 transition">
+                        Buka Kunci Jawaban (Gunakan Radar Otak Lu) 🔍
+                    </button>
+                </div>
+
+                <!-- ZONE VALIDASI JAWABAN (MUNCUL SETELAH DI-REVEAL) -->
+                <div id="validation-zone" class="hidden border-t border-gray-800 pt-4 mt-4 animate-fade-in">
+                    <p class="text-xs text-gray-500 uppercase font-mono tracking-wider">Kunci Jawaban Valid:</p>
+                    <p id="answer-text" class="text-sm font-bold text-green-400 font-mono mt-1 mb-6 bg-green-500/5 p-3 rounded-lg border border-green-500/20"></p>
+                    
+                    <p class="text-xs text-center text-gray-400 mb-3 font-semibold">Apakah tebakan di otak lu tadi beneran SKAKMAT (Benar)?</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="handleUserVerdict(true)" class="bg-green-500 hover:bg-green-600 text-gray-950 font-black py-3 rounded-xl tracking-wider transition">
+                            BENAR 👍 (+10)
+                        </button>
+                        <button onclick="handleUserVerdict(false)" class="bg-red-500 hover:bg-red-600 text-gray-950 font-black py-3 rounded-xl tracking-wider transition">
+                            SALAH 👎 (-1 Nyawa)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: GAME OVER / SELESAI -->
+            <div id="end-screen" class="hidden text-center py-8">
+                <span id="end-icon" class="text-5xl">🏆</span>
+                <h2 id="end-title" class="text-2xl font-black mt-4 tracking-wider">MISI PARIPURNA</h2>
+                <p class="text-sm text-gray-400 mt-2">Skor Akhir Intelijen Komando Lu:</p>
+                <div class="text-4xl font-black text-yellow-500 my-4 font-mono" id="final-score">0</div>
+                <button onclick="resetGame()" class="mt-4 bg-gray-800 hover:bg-gray-700 text-white font-bold px-6 py-2.5 rounded-xl border border-gray-700 transition">
+                    ULANGI OPERASI 🔄
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center text-gray-700 text-[10px] pb-4 tracking-widest font-mono">
+        COMMANDER INTERACTIVE ENGINE V1.0 • 2026 • <span id="footer-mode">Online</span>
+    </footer>
+
+    <!-- JAVASCRIPT GAME LOGIC SYSTEM -->
+    <script>
+        // Register Service Worker untuk PWA Offline Support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => {
+                        console.log('✅ Service Worker registered:', reg);
+                        updateModeStatus();
+                    })
+                    .catch(err => {
+                        console.log('⚠️ Service Worker registration failed:', err);
+                        updateModeStatus();
+                    });
+            });
+        }
+
+        // Check if online/offline
+        function updateModeStatus() {
+            const isOnline = navigator.onLine;
+            const modeText = document.getElementById('mode-text');
+            const footerMode = document.getElementById('footer-mode');
+            const statusBadge = document.getElementById('status-badge');
+            
+            if (isOnline) {
+                modeText.textContent = '🌐 Online + Offline Cache';
+                footerMode.textContent = 'Online';
+                statusBadge.textContent = 'OPERASI AKTIF';
+            } else {
+                modeText.textContent = '⚡ Offline Mode (Cache)';
+                footerMode.textContent = 'Offline';
+                statusBadge.textContent = 'MODE OFFLINE';
+            }
+        }
+
+        window.addEventListener('online', updateModeStatus);
+        window.addEventListener('offline', updateModeStatus);
+
+        // PWA Install Button
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.classList.remove('hidden');
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('✅ User accepted the install prompt');
+                        installBtn.classList.add('hidden');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        window.addEventListener('appinstalled', () => {
+            console.log('✅ PWA installed successfully');
+            deferredPrompt = null;
+            installBtn.classList.add('hidden');
+        });
+
+        // Database 50 Soal Taktis Kita
+        const quizDatabase = [
+            { s: "SEJARAH & FILOLOGI", q: "Kata 'amat menarik' di Kidung Agung 5:16 versi Ibrani aslinya dibaca?", a: "Mahamaddim (Nama asli Nabi Muhammad SAW)." },
+            { s: "SEJARAH & FILOLOGI", q: "Kenapa klaim 'Anak Tunggal' Ishak runtuh berdasarkan data kronologi umur?", a: "Karena Ibrahim memiliki Ismail 14 tahun sebelum Ishak lahir." },
+            { s: "SEJARAH", q: "Suku penakluk Baghdad abad ke-13 yang militer murni tapi akhirnya takluk secara kultural masuk Islam?", a: "Bangsa Mongol (Dinasti Jengghis Khan)." },
+            { s: "SEJARAH", q: "Manuskrip Al-Qur'an tertua di dunia yang ditemukan di Inggris tahun 2015?", a: "Manuskrip Birmingham." },
+            { s: "SEJARAH", q: "Bahasa resmi liturgi gereja Syam sebelum ekspansi peradaban Islam?", a: "Bahasa Suryani (Syriac), Koptik, atau Yunani." },
+            { s: "SEJARAH", q: "Putra Nabi Ibrahim AS yang sengaja coba digeser namanya dari silsilah utama pengorbanan oleh para ahli kitab kuno?", a: "Nabi Ismail AS." },
+            { s: "SEJARAH", q: "Apakah bukti prasasti purba mencatat Arab Kristen pra-Islam sudah memakai kalimat zikir seperti Astaghfirullah?", a: "Tidak. Bukti prasasti hanya mencatat kata tunggal 'Al-Lah'." },
+            { s: "SOSIOLOGI GLOBAL", q: "Kebijakan penyamaan standar produk konsumsi sesuai syariat Islam di negara non-Muslim saat ini?", a: "Sertifikasi Halal (Ekosistem Halal Global)." },
+            { s: "BAHASA", q: "Kenapa struktur bahasa Ibrani kuno dan bahasa Arab memiliki kemiripan akar kata yang sangat identik?", a: "Karena berasal dari satu rumpun bahasa yang sama, yaitu Bahasa Semitik." },
+            { s: "SEJARAH", q: "Khalifah dinasti Umayyah yang meresmikan bahasa Arab sebagai bahasa administrasi kekhalifahan?", a: "Khalifah Abd al-Malik bin Marwan." },
+            { s: "SOSIOLOGI", q: "Mengapa non-Muslim di Indonesia secara spontan latah mengucapkan kata Islami?", a: "Power of Circle (penyerapan otomatis frekuensi sosiologis dari tongkrongan)." },
+            { s: "SEJARAH", q: "Apa tujuan utama para elit teolog terdahulu mengubah teks identitas anak pertama Ibrahim?", a: "Ego rasis kesukuan agar hak paten spiritual berkah kenabian diklaim milik jalur mereka." },
+            { s: "TEOLOGI", q: "Surah Al-Jumu'ah ayat 5 mengumpamakan orang yang menghafal kitab tapi tak paham isinya seperti?", a: "Keledai yang membawa kitab-kitab tebal di punggungnya." },
+            { s: "SEJARAH SAHABAT", q: "Berapa lama waktu yang dihabiskan Sahabat Ibnu Umar hanya untuk menghafal satu Surah Al-Baqarah?", a: "8 Tahun (karena fokus paham dulu dan amalkan)." },
+            { s: "KEAMANAN DATA", q: "Kenapa sistem pengamanan teks Al-Qur'an diletakkan di dalam dada manusia, bukan cuma kertas?", a: "Agar tak bisa dimusnahkan oleh musuh." },
+            { s: "PSIKOLOGI", q: "Istilah psikologi menuduh Al-Qur'an berubah padahal kitabnya sendiri yang hancur direvisi?", a: "Psychological Projection (Proyeksi Ego/Mental)." },
+            { s: "ARTI KALIMAT", q: "Apa arti esensial kalimat Istirja' (Innalillahi wa inna ilaihi raji'un)?", a: "Sesungguhnya kami adalah milik Allah, dan sesungguhnya hanya kepada-Nya lah kami kembali." },
+            { s: "MATEMATIKA UMUR", q: "Berapa selisih umur matematis antara Nabi Ismail dan Nabi Ishak berdasarkan teks Kejadian?", a: "14 Tahun (Ibrahim berumur 86 saat Ismail lahir, dan 100 saat Ishak lahir)." },
+            { s: "MATEMATIKA UMUR", q: "Pada rentang usia berapakah Ismail mutlak menyandang status anak tunggal?", a: "Dari lahir hingga usia 14 tahun." },
+            { s: "MATEMATIKA SALAT", q: "Berapa kali minimal Surah Al-Fatihah dibaca dalam salat wajib selama tepat 1 minggu?", a: "119 Kali (17 rakaat per hari x 7 hari)." },
+            { s: "SIMULASI DATA", q: "Jika 1 juz dibaca lancar dalam 20 menit, berapa jam total waktu melantunkan 30 juz luar kepala?", a: "10 Jam murni." },
+            { s: "FISIKA SAINS", q: "Jika waktu paruh Karbon-14 adalah 5730 tahun dan sisa isotopnya tinggal 50%, berapa usia naskah?", a: "Tepat 5.730 Tahun." },
+            { s: "MATEMATIKA SALAT", q: "Berapa jumlah total rakaat salat wajib seorang Muslim dalam waktu 1 tahun masehi (365 hari)?", a: "6.205 Rakaat (17 x 365)." },
+            { s: "MATEMATIKA PAHALA", q: "Membaca 1 huruf mendapat 10 kebaikan. Berapa kebaikan membaca Basmalah yang berisi 19 huruf?", a: "190 Kebaikan dasar." },
+            { s: "ALJABAR", q: "Selesaikan persamaan linear penentu variabel umur: 3x - 14 = 100!", a: "x = 38." },
+            { s: "TEKNOLOGI DATA", q: "Berapa MB ruang yang habis jika mengunduh 20 versi aplikasi Al-Qur'an digital ukuran masing-masing 15 MB?", a: "300 MB." },
+            { s: "PERSENTASE", q: "Berapakah persentase nabi bergelar Ulul Azmi dari total 25 nabi yang wajib diketahui?", a: "20% (5 dari 25 nabi)." },
+            { s: "MATEMATIKA SOSIAL", q: "Dari 120 peserta lomba hafalan, hanya 15% masuk final. Berapa peserta yang gugur di penyisihan?", a: "102 Peserta gugur." },
+            { s: "HITUNG CEPAT", q: "Berapakah hasil dari operasi hitung angka taktis berikut: 100 - 86 + 30?", a: "44." },
+            { s: "FISIKA NUKLIR", q: "Sains modern apa yang dipakai mengukur umur fisik perkamen kulit Manuskrip Birmingham?", a: "Radiocarbon Dating (Penanggalan Karbon-14)." },
+            { s: "TEOLOGI SAINS", q: "Sifat Allah apa yang menjamin Al-Qur'an bersih total dari kontradiksi sains masa depan?", a: "Al-'Alim (Maha Mengetahui) dan Al-Hakim (Maha Bijaksana)." },
+            { s: "FISIKA BUNYI", q: "Hukum fisika mekanika gelombang yang bekerja mengatur letak Makharijul Huruf pada lidah?", a: "Akustik Fonetik (Mekanika Tekanan Udara dan Resonansi)." },
+            { s: "ASTRONOMI", q: "Fenomena alam fisika 'pergantian malam dan siang' di Surah Ali 'Imran: 190 terjadi akibat?", a: "Rotasi Bumi pada porosnya sendiri." },
+            { s: "UI/UX SISTEM", q: "Kenapa sistem harakat dan rumus tajwid Rasm Utsmani disebut UI/UX coding visual terbaik?", a: "Karena bekerja otomatis mirip kode biner visual." },
+            { s: "FISIKA SUARA", q: "Jalan suara azan berkecepatan 340 m/s sampai ke telinga dalam 3 detik. Jarak menara ke kita adalah?", a: "1.020 Meter (Jarak = Kecepatan x Waktu)." },
+            { s: "FISIKA MEKANIKA", q: "Hukum Newton apa saat lu ngerem motor mendadak sambil latah teriak Astaghfirullah?", a: "Hukum I Newton (Inersia / Kelembaman)." },
+            { s: "META-SAINS", q: "Secara ilmiah radiasi energi, penyakit 'Ain (tatapan dengki) bersumber pancaran dari?", a: "Gelombang energi negatif dari fokus mata manusia yang hasad." },
+            { s: "SAINS MATERIAL", q: "Kenapa media kulit hewan (perkamen) abad ke-7 jauh lebih kokoh dari kertas selulosa modern?", a: "Karena anyaman serat protein kolagen organik hewan yang dikeringkan sangat kuat." },
+            { s: "FISIKA AKUSTIK", q: "Mengapa suara tajwid Ikhfa (dengung) frekuensinya berbeda dengan Izhar (jelas)?", a: "Karena aliran udara dipindahkan sebagian ke rongga hidung (Nasal Cavity)." },
+            { s: "SOSIOLOGI", q: "Berikan contoh penggunaan kalimat Innalillahi di tongkrongan RI untuk urusan non-kematian!", a: "'Innalillahi, HP gua jatuh layarnya langsung retak seribu, Jon!'" },
+            { s: "SOP HIDUP", q: "Mengapa kalimat Basmalah disebut sebagai tombol sakelar start utama operasi kehidupan?", a: "Karena dalam SOP Islam, setiap perkara baik wajib dibuka dengan bismillah agar arusnya berkah." },
+            { s: "VISUAL CODING", q: "Apa fungsi mutlak kode simbol 'Alis' (~) dalam Al-Qur'an?", a: "Sinyal mata untuk memperpanjang ketukan vokal suara menjadi 5 sampai 6 ketukan." },
+            { s: "AL-QUR'AN", q: "Di surah dan ayat berapakah Allah menantang manusia mencari celah eror/kontradiksi isi Al-Qur'an?", a: "Surah An-Nisa Ayat 82." },
+            { s: "LINGUISTIK", q: "Kenapa membaca Al-Qur'an anti-jebakan fonetik, tidak seperti bahasa Inggris (enough dibaca inaf)?", a: "Karena Al-Qur'an didesain konsisten murni: Apa yang tercetak di visual, itulah yang berbunyi." },
+            { s: "ISTILAH AL-QUR'AN", q: "Apa sebutan kehormatan dari Allah bagi ilmuwan/kaum cerdas yang suka membedah data alam semesta?", a: "Ulul Albab (Pemilik Inti Pikiran yang Bersih)." },
+            { s: "FILOSOFI", q: "Lanjutkan kalimat: 'Tingkat tertinggi manusia berinteraksi dengan Al-Qur'an bukan menghafal, tapi...'", a: "...Memahami maknanya (Tadabur) lalu mengamalkannya dalam peradaban." },
+            { s: "SOSIOLOGI", q: "Apa zikir refleks otomatis bawah sadar Muslim saat melihat temannya ugal-ugalan di jalan?", a: "Astaghfirullahal'adzim!" },
+            { s: "BUDAYA POP", q: "Sebutkan kalimat zikir 'The Big Five' (Lima Besar) yang sukses jadi bahasa emosi nasional di RI!", a: "Bismillah, Alhamdulillah, Astaghfirullah, Masyaallah, Innalillahi." },
+            { s: "AL-QUR'AN", q: "Mengapa di Surah Muhammad: 24 Allah menyindir keras orang yang membaca Al-Qur'an tapi hatinya terkunci?", a: "Karena mereka malas melakukan Tadabur (merenungi kedalaman arti teks)." },
+            { s: "SOSIOLOGI", q: "Kenapa tameng argumen 'itu kan cuma bahasa Arab' langsung patah total pada konteks non-Muslim RI?", a: "Karena mereka hidup di Indonesia yang bahasa ibunya bukan bahasa Arab. Mereka latah murni karena pengaruh dominasi budaya Islam." }
+        ];
+
+        // STATE ENGINE GAME
+        let shuffledQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let lives = 3;
+
+        // FUNGSI MULAI GAME
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            // Acak urutan soal biar seru
+            shuffledQuestions = [...quizDatabase].sort(() => Math.random() - 0.5);
+            currentQuestionIndex = 0;
+            score = 0;
+            lives = 3;
+            updateDashboard();
+            showQuestion();
+        }
+
+        // TAMPILKAN SOAL KE SCREEN
+        function showQuestion() {
+            document.getElementById('validation-zone').classList.add('hidden');
+            document.getElementById('btn-reveal').classList.remove('hidden');
+            
+            let currentQ = shuffledQuestions[currentQuestionIndex];
+            document.getElementById('current-idx').innerText = currentQuestionIndex + 1;
+            document.getElementById('question-sector').innerText = currentQ.s;
+            document.getElementById('question-text').innerText = currentQ.q;
+            document.getElementById('answer-text').innerText = currentQ.a;
+        }
+
+        // BUKA KUNCI JAWABAN
+        function revealAnswer() {
+            document.getElementById('btn-reveal').classList.add('hidden');
+            document.getElementById('validation-zone').classList.remove('hidden');
+        }
+
+        // EKSEKUSI TOMBOL BENAR/SALAH DARI USER
+        function handleUserVerdict(isCorrect) {
+            if (isCorrect) {
+                score += 10;
+            } else {
+                lives--;
+            }
+            updateDashboard();
+
+            if (lives <= 0) {
+                endGame(false); // Game Over kalah nyawa
+            } else {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < shuffledQuestions.length) {
+                    showQuestion();
+                } else {
+                    endGame(true); // Game Over karena semua soal habis (Menang!)
+                }
+            }
+        }
+
+        // UPDATE TAMPILAN DASHBOARD ATAS
+        function updateDashboard() {
+            document.getElementById('score-val').innerText = score;
+            let heartString = "";
+            for (let i = 0; i < 3; i++) {
+                heartString += (i < lives) ? "❤️" : "🖤";
+            }
+            document.getElementById('lives-val').innerText = heartString;
+        }
+
+        // END GAME MANAGEMENT
+        function endGame(isVictory) {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('end-screen').classList.remove('hidden');
+            
+            const iconEl = document.getElementById('end-icon');
+            const titleEl = document.getElementById('end-title');
+            const scoreEl = document.getElementById('final-score');
+            
+            scoreEl.innerText = score;
+            
+            if (isVictory) {
+                iconEl.innerText = "🏆👑";
+                titleEl.innerText = "OPERASI PARIPURNA: MENANG MUTLAK!";
+                titleEl.className = "text-2xl font-black mt-4 tracking-wider text-green-400";
+            } else {
+                iconEl.innerText = "💀💥";
+                titleEl.innerText = "MISI GAGAL: AMUNISI OTAK JOLOS!";
+                titleEl.className = "text-2xl font-black mt-4 tracking-wider text-red-500";
+            }
+        }
+
+        // RESET GAME
+        function resetGame() {
+            document.getElementById('end-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+            updateModeStatus();
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', updateModeStatus);
+    </script>
+</body>
+</html>
