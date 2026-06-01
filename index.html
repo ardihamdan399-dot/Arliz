@@ -10,8 +10,6 @@
     <title>Arliz Gameplay - Quiz Interaktif</title>
     <!-- Menggunakan Tailwind CSS Premium UI -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Midtrans Payment Gateway -->
-    <script src="https://app.midtrans.com/snap/snap.js" data-client-key="YOUR_MIDTRANS_CLIENT_KEY"></script>
     <style>
         @keyframes pulse-border {
             0%, 100% { border-color: rgba(234, 179, 8, 0.3); }
@@ -122,7 +120,7 @@
 
     <!-- SHOP MODAL -->
     <div id="shop-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div class="bg-gray-900 rounded-2xl p-6 border-2 border-yellow-500/30 max-w-md w-full slide-in">
+        <div class="bg-gray-900 rounded-2xl p-6 border-2 border-yellow-500/30 max-w-md w-full slide-in max-h-screen overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-black text-yellow-500">💎 PREMIUM SHOP</h2>
                 <button onclick="closeShop()" class="text-gray-400 hover:text-white text-2xl">✕</button>
@@ -138,7 +136,7 @@
                         </div>
                         <span class="text-2xl">💵</span>
                     </div>
-                    <button onclick="buyItem('extra_lives', 'Extra Lives Pack', 14900)" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition">
+                    <button onclick="buyItem('extra_lives', 'Extra Lives Pack', 'Rp 14.900')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition">
                         Beli Rp 14.900
                     </button>
                 </div>
@@ -152,7 +150,7 @@
                         </div>
                         <span class="text-2xl">💵</span>
                     </div>
-                    <button onclick="buyItem('hints', 'Hints Pack', 14900)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition">
+                    <button onclick="buyItem('hints', 'Hints Pack', 'Rp 14.900')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition">
                         Beli Rp 14.900
                     </button>
                 </div>
@@ -166,7 +164,7 @@
                         </div>
                         <span class="text-2xl">💎</span>
                     </div>
-                    <button onclick="buyItem('premium', 'Premium Pass', 74900)" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded-lg transition">
+                    <button onclick="buyItem('premium', 'Premium Pass', 'Rp 74.900')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded-lg transition">
                         Beli Rp 74.900
                     </button>
                 </div>
@@ -179,6 +177,68 @@
         </div>
     </div>
 
+    <!-- PAYMENT INSTRUCTION MODAL -->
+    <div id="payment-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-900 rounded-2xl p-6 border-2 border-green-500/30 max-w-md w-full slide-in max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-black text-green-400">✅ Instruksi Pembayaran</h2>
+                <button onclick="closePaymentModal()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Item Details -->
+                <div id="payment-item" class="bg-gray-800 p-4 rounded-lg border border-green-500/20">
+                    <p class="text-sm text-gray-300 mb-1">Item yang dibeli:</p>
+                    <p id="payment-item-name" class="text-lg font-bold text-yellow-500">Extra Lives Pack</p>
+                    <p class="text-sm text-gray-400 mt-2">Total pembayaran:</p>
+                    <p id="payment-amount" class="text-2xl font-black text-green-400">Rp 14.900</p>
+                </div>
+
+                <!-- Payment Instructions -->
+                <div class="bg-gray-800 p-4 rounded-lg border border-blue-500/20">
+                    <p class="text-sm font-bold text-blue-300 mb-3">📱 Silakan transfer via Dana ke:</p>
+                    
+                    <div class="bg-gray-900 p-3 rounded-lg mb-3 border border-gray-700">
+                        <p class="text-xs text-gray-400 mb-1">Nomor Dana (Atas Nama: Arliz):</p>
+                        <p class="text-lg font-mono font-black text-yellow-400 break-all">082195955096</p>
+                    </div>
+
+                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">
+                        <p class="text-xs text-gray-400 mb-1">Informasi Pembayaran:</p>
+                        <ul class="text-xs text-gray-300 space-y-1">
+                            <li>✓ <strong>Untuk:</strong> Arliz</li>
+                            <li id="payment-desc">✓ <strong>Catatan:</strong> Extra Lives Pack</li>
+                            <li>✓ <strong>Jumlah:</strong> <span id="payment-note-amount">Rp 14.900</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Confirmation Instructions -->
+                <div class="bg-gray-800 p-4 rounded-lg border border-purple-500/20">
+                    <p class="text-sm font-bold text-purple-300 mb-3">💬 Setelah Transfer:</p>
+                    <p class="text-xs text-gray-300 mb-3">Hubungi via WhatsApp untuk konfirmasi pembayaran:</p>
+                    <a id="wa-link" href="https://wa.me/082195955096?text=Halo,%20saya%20sudah%20transfer%20untuk%20Arliz%20Gameplay%20item%20Extra%20Lives%20Pack%20(Rp%2014.900).%20Mohon%20konfirmasi." target="_blank" class="block w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition text-center">
+                        💬 Hubungi via WhatsApp
+                    </a>
+                </div>
+
+                <!-- Important Notes -->
+                <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 text-xs text-yellow-200">
+                    <p class="font-bold mb-1">⚠️ PENTING:</p>
+                    <ul class="space-y-1">
+                        <li>✓ Pastikan jumlah transfer sesuai</li>
+                        <li>✓ Tunggu konfirmasi dari admin</li>
+                        <li>✓ Bonus akan langsung aktif setelah konfirmasi</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button onclick="closePaymentModal()" class="w-full mt-4 bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 rounded-lg transition">
+                Tutup
+            </button>
+        </div>
+    </div>
+
     <!-- FOOTER -->
     <footer class="text-center text-gray-700 text-[10px] pb-4 tracking-widest font-mono">
         ARLIZ GAMEPLAY V1.0 • 2026 • <span id="footer-mode">Online</span>
@@ -186,10 +246,6 @@
 
     <!-- JAVASCRIPT GAME LOGIC SYSTEM -->
     <script>
-        // Midtrans Configuration
-        const MIDTRANS_CLIENT_KEY = 'YOUR_MIDTRANS_CLIENT_KEY';
-        const MIDTRANS_SERVER_URL = 'YOUR_SERVER_URL/api/payment'; // Backend URL Anda
-
         // Premium Features State
         let premiumFeatures = {
             extraLives: 0,
@@ -206,71 +262,23 @@
             document.getElementById('shop-modal').classList.add('hidden');
         }
 
-        function buyItem(itemType, itemName, price) {
-            if (!window.snap) {
-                alert('Payment gateway belum tersedia. Hubungi support.');
-                return;
-            }
-
-            // Send request to backend untuk membuat transaction
-            const orderId = 'ARLIZ-' + Date.now();
-            
-            fetch(MIDTRANS_SERVER_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    item_type: itemType,
-                    item_name: itemName,
-                    amount: price,
-                    order_id: orderId,
-                    customer_name: 'Guest Player'
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.token) {
-                    snap.pay(data.token, {
-                        onSuccess: function(result) {
-                            handlePaymentSuccess(itemType);
-                        },
-                        onPending: function(result) {
-                            alert('Pembayaran pending, silakan lengkapi transaksi Anda');
-                        },
-                        onError: function(result) {
-                            alert('Pembayaran gagal! Silakan coba lagi.');
-                        },
-                        onClose: function() {
-                            alert('Anda menutup popup pembayaran');
-                        }
-                    });
-                }
-            })
-            .catch(err => {
-                console.error('Payment error:', err);
-                alert('Terjadi kesalahan. Coba lagi nanti.');
-            });
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.add('hidden');
         }
 
-        function handlePaymentSuccess(itemType) {
-            switch(itemType) {
-                case 'extra_lives':
-                    premiumFeatures.extraLives += 3;
-                    alert('✅ +3 Nyawa ditambahkan! Selamat bermain 🎮');
-                    break;
-                case 'hints':
-                    premiumFeatures.hints += 5;
-                    alert('✅ +5 Hints ditambahkan! Gunakan dengan bijak 💡');
-                    break;
-                case 'premium':
-                    premiumFeatures.isPremium = true;
-                    premiumFeatures.extraLives = 999;
-                    premiumFeatures.hints = 999;
-                    alert('🎉 Premium Pass aktif! Nikmati semua fitur tanpa batas!');
-                    break;
-            }
-            localStorage.setItem('premiumFeatures', JSON.stringify(premiumFeatures));
+        function buyItem(itemType, itemName, amount) {
+            // Set payment details
+            document.getElementById('payment-item-name').innerText = itemName;
+            document.getElementById('payment-amount').innerText = amount;
+            document.getElementById('payment-note-amount').innerText = amount;
+            document.getElementById('payment-desc').innerText = `✓ <strong>Catatan:</strong> ${itemName}`;
+
+            // Update WhatsApp link
+            const waLink = `https://wa.me/082195955096?text=Halo,%20saya%20sudah%20transfer%20untuk%20Arliz%20Gameplay%20item%20${itemName}%20(${amount}).%20Mohon%20konfirmasi.`;
+            document.getElementById('wa-link').href = waLink;
+
+            // Show payment modal
+            document.getElementById('payment-modal').classList.remove('hidden');
             closeShop();
         }
 
@@ -433,16 +441,8 @@
 
         // BUKA KUNCI JAWABAN
         function revealAnswer() {
-            if (premiumFeatures.hints > 0 || premiumFeatures.isPremium) {
-                document.getElementById('btn-reveal').classList.add('hidden');
-                document.getElementById('validation-zone').classList.remove('hidden');
-                if (premiumFeatures.hints > 0) {
-                    premiumFeatures.hints--;
-                }
-            } else {
-                document.getElementById('btn-reveal').classList.add('hidden');
-                document.getElementById('validation-zone').classList.remove('hidden');
-            }
+            document.getElementById('btn-reveal').classList.add('hidden');
+            document.getElementById('validation-zone').classList.remove('hidden');
         }
 
         // EKSEKUSI TOMBOL BENAR/SALAH DARI USER
